@@ -1,0 +1,30 @@
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+linters:
+  enable-all: true
+  disable:
+    - deadcode # deprecated
+    - exhaustivestruct # too aggressive - authors intended its use only for special cases
+    - exhaustruct # too agressive - authors intended its use only for special cases
+    - ifshort # deprecated
+    - interfacer # deprecated
+    - golint # deprecated
+    - maligned # deprecated
+    - nlreturn # too aggressive, style
+    - nosnakecase # deprecated
+    - rowserrcheck # disabled - https://github.com/golangci/golangci-lint/issues/2649
+    - scopelint # deprecated
+    - sqlclosecheck # disabled - https://github.com/golangci/golangci-lint/issues/2649
+    - structcheck # deprecated
+    - tenv # cannot use t.Setenv in parallel tests
+    - wastedassign # disabled - https://github.com/golangci/golangci-lint/issues/2649
+    - wrapcheck # too agressive
+    - wsl # too aggressive, style
+    - varcheck # deprecated
+    - varnamelen # too aggressive, style
+
+linters-settings:
+  cyclop:
+    max-complexity: 15
