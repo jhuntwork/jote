@@ -104,7 +104,7 @@ func (j *Jote) commit(newname string, oldname string) error {
 		}
 	}
 	// Oldname is different but it is a tracked file, already committed. Use Move.
-	if oldname != newname && !status.IsUntracked(oldname) {
+	if oldname != "" && oldname != newname && !status.IsUntracked(oldname) {
 		message = fmt.Sprintf("%s -> %s", newname, oldname)
 		_, err = wt.Move(oldname, newname)
 		if err != nil {

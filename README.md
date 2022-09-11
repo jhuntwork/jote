@@ -103,3 +103,4 @@ switch to a list of those documents, allowing you to select one for editing.
 - More advanced searches by content.
 - Support a 'publish' keyword in the front matter. This could then be used by
   plugins to format and send documents to configured consumers.
+- Deleting notes.
