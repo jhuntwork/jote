@@ -86,29 +86,28 @@ func (j *Jote) commit(newname string, oldname string) error {
 	if err != nil {
 		return err
 	}
-	// Either there was no oldname given, or it's the same as the new one
-	if oldname == "" || oldname == newname {
-		_, err = wt.Add(newname)
-		if err != nil {
-			return fmt.Errorf("filename: %s, error running Add: %w", newname, err)
+
+	var move bool
+	if oldname != "" && oldname != newname {
+		// A title was provided on a new file.
+		if status.IsUntracked(oldname) {
+			if err := os.Rename(filepath.Join(j.root, oldname), filepath.Join(j.root, newname)); err != nil {
+				return fmt.Errorf("could not rename: %w", err)
+			}
+		} else {
+			// The title changed.
+			move = true
 		}
 	}
-	// Oldname was given, but it is an untracked file. Move it manually first, then Add.
-	if oldname != "" && status.IsUntracked(oldname) {
-		if err := os.Rename(filepath.Join(j.root, oldname), filepath.Join(j.root, newname)); err != nil {
-			return fmt.Errorf("could not rename: %w", err)
-		}
-		_, err = wt.Add(newname)
-		if err != nil {
-			return fmt.Errorf("filename: %s, error running Add: %w", newname, err)
-		}
-	}
-	// Oldname is different but it is a tracked file, already committed. Use Move.
-	if oldname != "" && oldname != newname && !status.IsUntracked(oldname) {
-		message = fmt.Sprintf("%s -> %s", newname, oldname)
+	if move {
 		_, err = wt.Move(oldname, newname)
 		if err != nil {
 			return fmt.Errorf("filename: %s, error running Move: %w", oldname, err)
+		}
+	} else {
+		_, err = wt.Add(newname)
+		if err != nil {
+			return fmt.Errorf("filename: %s, error running Add: %w", newname, err)
 		}
 	}
 	_, err = wt.Commit(message, &git.CommitOptions{})
