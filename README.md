@@ -46,12 +46,12 @@ tags: []
 ---
 ```
 
-The section between the `---` lines is considered frontmatter and is parsed as
+The section between the `---` lines is considered front matter and is parsed as
 yaml. If you provide a title, the file will be saved as `[title].md`, otherwise
 the file will be named with a unix timestamp of the current time.
 
-Title are interpreted as relative paths to the git repository. This means that
-they can support a strucutred hierarchy. For example:
+`title` is interpreted as a relative path in the git repository. This means that
+notes can support a structured hierarchy. For example:
 
 ```yaml
 title: recipes/Asian Food/Spicy Thai Noodles
@@ -75,7 +75,7 @@ tags:
   - another tag
 ```
 
-Everything following the frontmatter section is the actual Markdown content.
+Everything following the front matter section is the actual Markdown content.
 
 ### Listing all notes
 
@@ -101,5 +101,5 @@ switch to a list of those documents, allowing you to select one for editing.
 - Outputting results of tag searches to stdout as a list, for consumption by
   other CLI tools.
 - More advanced searches by content.
-- Support a 'publish' keyword in the frontmatter. This could then be used by
+- Support a 'publish' keyword in the front matter. This could then be used by
   plugins to format and send documents to configured consumers.
