@@ -48,8 +48,19 @@ tags: []
 
 The section between the `---` lines is considered frontmatter and is parsed as
 yaml. If you provide a title, the file will be saved as `[title].md`, otherwise
-the file will be named with a unix timestamp of the current time. `tags` is a
-list of strings, so it can either be specified like this:
+the file will be named with a unix timestamp of the current time.
+
+Title are interpreted as relative paths to the git repository. This means that
+they can support a strucutred hierarchy. For example:
+
+```yaml
+title: recipes/Asian Food/Spicy Thai Noodles
+```
+
+The resulting file would be named
+`~/.local/share/jote/recipes/Asian Food/Spicy Thai Noodles.md`.
+
+`tags` is a list of strings, so it can either be specified like this:
 
 ```yaml
 tags: [one, two, "another tag"]
@@ -73,7 +84,8 @@ Run `jote ls`. This will provide a `fzf`-like interface (via
 Selecting a note will open it for editing.
 
 Changes made to pre-existing notes via the jote interface will result in a new
-git commit tracking that change.
+git commit tracking that change. Changing the title will move the file to the
+new location.
 
 ### Searching by tags
 
