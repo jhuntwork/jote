@@ -19,7 +19,7 @@ should at minium be:
 For now, the easiest way to install is:
 
 ```sh
-go install github.com/jhuntwork/jote@latest
+go install github.com/jhuntwork/jote/cmd/jote@latest
 ```
 
 ## Usage
