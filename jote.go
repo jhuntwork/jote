@@ -54,18 +54,18 @@ func NewJote(storePath string, editor exec.Cmd) (Jote, error) {
 	if err != nil {
 		if repo, err = git.PlainInit(root, false); err != nil {
 			return Jote{},
-				fmt.Errorf("%v: %w", errNewJote, err)
+				fmt.Errorf("%w: %s", errNewJote, err.Error())
 		}
 		// Create a new empty branch named after this system's hostname
 		hostname, err := os.Hostname()
 		if err != nil {
-			return Jote{}, fmt.Errorf("%v: %w", errNewJote, err)
+			return Jote{}, fmt.Errorf("%w: %s", errNewJote, err.Error())
 		}
 		h := plumbing.NewSymbolicReference(
 			plumbing.HEAD,
 			plumbing.NewBranchReferenceName(strings.Split(hostname, ".")[0]))
 		if err := repo.Storer.SetReference(h); err != nil {
-			return Jote{}, fmt.Errorf("%v: %w", errNewJote, err)
+			return Jote{}, fmt.Errorf("%w: %s", errNewJote, err.Error())
 		}
 	}
 	return Jote{
@@ -164,29 +164,30 @@ func (j *Jote) selectFileFromList(files []string) (string, error) {
 
 func (j *Jote) Tags() error {
 	tags := make(map[string][]string)
-	err := filepath.Walk(
-		j.root,
-		func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(j.root, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() && info.Name() == ".git" {
+			return filepath.SkipDir
+		}
+		if !info.IsDir() {
+			entry, err := parseToEntry(path)
 			if err != nil {
 				return err
 			}
-			if info.IsDir() && info.Name() == ".git" {
-				return filepath.SkipDir
-			}
-			if !info.IsDir() {
-				entry, err := parseToEntry(path)
-				if err != nil {
-					return err
+			for _, tag := range entry.Tags {
+				if tags[tag] == nil {
+					tags[tag] = []string{}
 				}
-				for _, tag := range entry.Tags {
-					if tags[tag] == nil {
-						tags[tag] = []string{}
-					}
-					tags[tag] = append(tags[tag], strings.TrimPrefix(path, fmt.Sprintf("%s/", j.root)))
-				}
+				tags[tag] = append(
+					tags[tag],
+					strings.TrimPrefix(path, fmt.Sprintf("%s/", j.root)),
+				)
 			}
-			return nil
-		},
+		}
+		return nil
+	},
 	)
 	if err != nil {
 		return fmt.Errorf("unable to walk the directory tree: %w", err)
@@ -205,7 +206,11 @@ func (j *Jote) Tags() error {
 			if i == -1 {
 				return ""
 			}
-			return fmt.Sprintf("Files with the tag %s:\n\n%s\n", tagSlice[i], strings.Join(tags[tagSlice[i]], "\n"))
+			return fmt.Sprintf(
+				"Files with the tag %s:\n\n%s\n",
+				tagSlice[i],
+				strings.Join(tags[tagSlice[i]], "\n"),
+			)
 		}),
 	)
 	if err != nil {
@@ -276,7 +281,9 @@ func (j *Jote) edit(filename string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	j.editor.Args = append(j.editorArgs, filename) //nolint:gocritic // Not appending result to same slice is expected.
+	j.editor.Args = j.editorArgs
+	j.editor.Args = append(j.editor.Args, filename)
+
 	if err := j.editor.Run(); err != nil {
 		return false, fmt.Errorf("error calling editor: %w", err)
 	}

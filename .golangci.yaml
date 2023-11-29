@@ -6,6 +6,7 @@ linters:
   enable-all: true
   disable:
     - deadcode # deprecated
+    - depguard # Unneeded
     - exhaustivestruct # too aggressive - authors intended its use only for special cases
     - exhaustruct # too agressive - authors intended its use only for special cases
     - ifshort # deprecated

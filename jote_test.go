@@ -9,6 +9,7 @@ import (
 
 	"github.com/jhuntwork/jote"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewJote(t *testing.T) {
@@ -23,7 +24,7 @@ func TestNewJote(t *testing.T) {
 		defer os.RemoveAll(tmpdir)
 		js, err := jote.NewJote(tmpdir, exec.Cmd{})
 		assert.NotNil(js)
-		assert.NoError(err)
+		require.NoError(t, err)
 	})
 }
 
@@ -55,7 +56,7 @@ func TestAdd(t *testing.T) {
 			assert.FailNowf("encountered an unexpected error when Adding: %s", err.Error())
 		}
 		output, err := os.ReadFile(testout)
-		assert.NoError(err)
+		require.NoError(t, err)
 		assert.Contains(string(output), "Called with: arg1 arg2")
 	})
 }

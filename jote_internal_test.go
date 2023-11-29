@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func setupJote() (string, Jote, error) {
@@ -46,7 +47,7 @@ func Test_edit(t *testing.T) {
 		}
 		js.editor.Path = testEdit
 		changed, err := js.edit(filename)
-		assert.NoError(err)
+		require.NoError(t, err)
 		assert.False(changed)
 	})
 	t.Run("should return true if there were changes made to the file", func(t *testing.T) {
@@ -68,7 +69,7 @@ func Test_edit(t *testing.T) {
 		}
 		js.editor.Path = testEdit
 		changed, err := js.edit(filename)
-		assert.NoError(err)
+		require.NoError(t, err)
 		assert.True(changed)
 	})
 	t.Run("should error if the file cannot be found", func(t *testing.T) {
@@ -81,7 +82,7 @@ func Test_edit(t *testing.T) {
 		defer os.RemoveAll(tmpdir)
 		filename := filepath.Join(tmpdir, "fakefile")
 		_, err = js.edit(filename)
-		assert.Error(err)
+		require.Error(t, err)
 		assert.Contains(err.Error(), "fakefile: no such file or directory")
 	})
 	t.Run("should error if the editor cannot be called", func(t *testing.T) {
@@ -99,7 +100,7 @@ func Test_edit(t *testing.T) {
 		editorname := filepath.Join(tmpdir, "nosuchfile")
 		js.editor.Path = editorname
 		_, err = js.edit(filename)
-		assert.Error(err)
+		require.Error(t, err)
 		assert.Contains(err.Error(), "nosuchfile: no such file or directory")
 	})
 }
@@ -115,7 +116,7 @@ func TestNewJote(t *testing.T) {
 		}
 		defer os.RemoveAll(tmpdir)
 		root := filepath.Join(tmpdir, "jote")
-		assert.NoError(err)
+		require.NoError(t, err)
 		assert.Equal(root, js.root)
 	})
 	t.Run("should be git-backed", func(t *testing.T) {
@@ -126,7 +127,7 @@ func TestNewJote(t *testing.T) {
 			assert.FailNow(err.Error())
 		}
 		defer os.RemoveAll(tmpdir)
-		assert.NoError(err)
+		require.NoError(t, err)
 		if ok := assert.NotNil(js.repo); !ok {
 			return
 		}
@@ -140,7 +141,7 @@ func TestNewJote(t *testing.T) {
 			assert.FailNow(err.Error())
 		}
 		defer os.RemoveAll(tmpdir)
-		assert.NoError(err)
+		require.NoError(t, err)
 		gitRoot := filepath.Join(js.root, ".git")
 		finfo, err := os.Stat(gitRoot)
 		if err != nil {

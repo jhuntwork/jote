@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func (jc *joteCmd) tags(cmd *cobra.Command, args []string) error {
+func (jc *joteCmd) tags(_ *cobra.Command, _ []string) error {
 	js, err := jote.NewJote(jote.DefaultStoreLocation(), jc.editor)
 	if err != nil {
 		return err
